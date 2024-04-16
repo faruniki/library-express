@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const authRoutes = require('./routes/auth.routes');
-const profileRoutes = require('./routes/profile.routes');
 const bukuRoutes = require('./routes/buku.routes');
 const ulasanRoutes = require('./routes/ulasan.routes');
 const peminjamanRoutes = require('./routes/peminjaman.routes');
@@ -29,7 +28,6 @@ mongoose.connect(databaseConfig.url, { useNewUrlParser: true, useUnifiedTopology
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/profile', profileRoutes);
 
 app.use('/api/buku', bukuRoutes);
 app.use('/api/ulasan', ulasanRoutes);

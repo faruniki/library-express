@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -8,6 +8,13 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+    trim: true,
+    lowercase: true,
+  },
   password: {
     type: String,
     required: true,
@@ -15,31 +22,25 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: 'u', 
-    enum: ['a', 'p', 'u'], 
+    default: "u",
+    enum: ["a", "p", "u"],
   },
 });
 
-userSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw new Error('Invalid login credentials');
-  }
+userSchema.statics.findByCredentials = async function (username, password) {
+  const user = await this.findOne({ username });
+  if (!user) throw new Error("Invalid login credentials");
+
   const isPasswordMatch = await bcrypt.compare(password, user.password);
-  if (!isPasswordMatch) {
-    throw new Error('Invalid login credentials');
-  }
+  if (!isPasswordMatch) throw new Error("Invalid login credentials");
+  
   return user;
 };
 
-userSchema.pre('save', async function (next) {
-  const user = this;
-  if (user.isModified('password')) {
-    user.password = await bcrypt.hash(user.password, 8);
-  }
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password"))
+    this.password = await bcrypt.hash(this.password, 8);
   next();
 });
 
-const User = mongoose.model('User', userSchema);
-
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);
